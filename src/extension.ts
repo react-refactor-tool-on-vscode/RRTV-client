@@ -4,48 +4,80 @@ import * as vscode from 'vscode';
 import * as path from "path";
 import * as configRaw from './config.json';
 import {Config} from "./config";
-import {
-	LanguageClient,
-	LanguageClientOptions,
-	ServerOptions,
-	TransportKind
-} from 'vscode-languageclient/node';
+import * as lc from 'vscode-languageclient/node';
+import { 
+	CodeActionAndHover
+} from './hover_codeaction';
 
-let client: LanguageClient;
+let client: lc.LanguageClient;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(ctx: vscode.ExtensionContext) {
 	let config:Config = configRaw as Config;
-	const serverModule = context.asAbsolutePath(config.serverPath);
+	console.log("config: ", config);
+	setServer(ctx);
+	await createClient(ctx, config);
+	
+}
+
+function setServer(ctx: vscode.ExtensionContext): vscode.ExtensionContext {
+	let hoverAction = new CodeActionAndHover;
+	ctx.subscriptions.push(
+		vscode.languages.registerHoverProvider(
+			{ scheme: 'file', language: 'javascript' },
+			hoverAction
+		)
+	);
+	ctx.subscriptions.push(
+		vscode.languages.registerCodeActionsProvider(
+			{ scheme: 'file', language: 'javascript' },
+			hoverAction
+		)
+	);
+
+	return ctx;
+}
+
+function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.LanguageClient> {
+	const serverModule = ctx.asAbsolutePath(config.serverPath);
 	const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
-	const serverOptions: ServerOptions = {
-		run: { module: serverModule, transport: TransportKind.ipc },
+	const serverOptions: lc.ServerOptions = {
+		run: { module: serverModule, transport: lc.TransportKind.ipc },
 		debug: {
 			module: serverModule,
-			transport: TransportKind.ipc,
+			transport: lc.TransportKind.ipc,
 		}
 	};
-	const clientOptions: LanguageClientOptions = {
-		documentSelector: [{ scheme: 'file', language: 'plaintext' }],
+	const clientOptions: lc.LanguageClientOptions = {
+		documentSelector: [
+			{scheme: 'file', language: 'javascript' },
+			{scheme: 'file', language: 'javascriptreact' },
+			{scheme: 'file', language: 'typescript' },
+			{scheme: 'file', language: 'typescriptreact'},
+			{scheme: 'file', language: 'json'},
+			{scheme: 'file', language: 'plaintext'},
+	],
 		synchronize: {
 			configurationSection: 'languageServerExample',
 			fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
 		}
 	};
-	client = new LanguageClient(
-		'languageServerExample',
-		'Language Server Example',
+	client = new lc.LanguageClient(
+		'rrtv-server',
+		'RRTV-server',
 		serverOptions,
 		clientOptions
 	);
 	if(client) {
 		console.log("client created");
-		client.start();
+		client.start().catch(err => console.error(err));
 	} else {
 		console.log("client not created");
 	}
+	return Promise.resolve(client);
 }
+
 
 // This method is called when your extension is deactivated
 export function deactivate() {
