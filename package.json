@@ -18,6 +18,14 @@
       {
         "command": "hello.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "rrtv-client.triggerForm",
+        "title": "Trigger Form"
+      },
+      {
+        "command": "rrtv-client.triggerInput",
+        "title": "Trigger Input"
       }
     ],
     "configuration": {
@@ -38,7 +46,7 @@
             "messages",
             "verbose"
           ],
-          "default": "off",
+          "default": "verbose",
           "description": "Traces the communication between VS Code and the language server."
         }
       }

@@ -4,40 +4,33 @@ import * as vscode from 'vscode';
 import * as path from "path";
 import * as configRaw from './config.json';
 import {Config} from "./config";
+import {extractSelection} from './commandController';
 import * as lc from 'vscode-languageclient/node';
-import { 
-	CodeActionAndHover
-} from './hover_codeaction';
 
 let client: lc.LanguageClient;
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+export type extractParams = {
+	items: string[],
+	range: vscode.Range,
+	document: lc.DocumentUri
+};
+
+
 export async function activate(ctx: vscode.ExtensionContext) {
 	let config:Config = configRaw as Config;
 	console.log("config: ", config);
 	setServer(ctx);
 	await createClient(ctx, config);
-	
 }
 
 function setServer(ctx: vscode.ExtensionContext): vscode.ExtensionContext {
-	let hoverAction = new CodeActionAndHover;
 	ctx.subscriptions.push(
-		vscode.languages.registerHoverProvider(
-			{ scheme: 'file', language: 'javascript' },
-			hoverAction
-		)
+		//vscode.commands.registerTextEditorCommand
 	);
-	ctx.subscriptions.push(
-		vscode.languages.registerCodeActionsProvider(
-			{ scheme: 'file', language: 'javascript' },
-			hoverAction
-		)
-	);
-
 	return ctx;
 }
+
+
 
 function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.LanguageClient> {
 	const serverModule = ctx.asAbsolutePath(config.serverPath);
@@ -61,11 +54,21 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 		synchronize: {
 			configurationSection: 'languageServerExample',
 			fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
+		},
+		middleware: {
+			executeCommand: async (commands, args, next) => {
+				if(commands === 'extract') {
+					const paramsBack = await extractSelection(args);
+					next('extract-server', [paramsBack]);
+					console.log(paramsBack);
+				}
+				next(commands, args);
+			}
 		}
 	};
 	client = new lc.LanguageClient(
 		'rrtv-server',
-		'RRTV-server',
+		'rrtv-server',
 		serverOptions,
 		clientOptions
 	);
