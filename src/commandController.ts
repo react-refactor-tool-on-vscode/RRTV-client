@@ -8,6 +8,12 @@ export type ExtractParamsBack = {
     document: lc.DocumentUri
 };
 
+export type AttrParamsBack = {
+    pick: number | string;
+    range: vscode.Range;
+    document: lc.DocumentUri;
+};
+
 export async function extractSelection(args:any): Promise<ExtractParamsBack> {
 	const params = args as ExtractParams[];
     const items = params[0].items;
@@ -25,5 +31,18 @@ export async function extractSelection(args:any): Promise<ExtractParamsBack> {
         document: params[0].document
     };
     return paramsBack;
+}
+
+export async function getAttrSelection(args:any): Promise<AttrParamsBack> {
+    const items:string[] = args[0].items;
+    const document = args[0].document;
+    const range:vscode.Range = args[0].range;
+    let pick = await vscode.window.showQuickPick(items);
+    if(!pick) {pick = 'default';}
+    return {
+        pick: pick,
+        document:document,
+        range: range,
+    };
 }
 

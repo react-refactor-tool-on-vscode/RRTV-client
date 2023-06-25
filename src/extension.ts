@@ -4,8 +4,9 @@ import * as vscode from 'vscode';
 import * as path from "path";
 import * as configRaw from './config.json';
 import { Config } from "./config";
-import { extractSelection } from './commandController';
+import { extractSelection, getAttrSelection } from './commandController';
 import * as lc from 'vscode-languageclient/node';
+import { TabPosition, multiCursor } from './multicursor';
 
 export let client: lc.LanguageClient;
 
@@ -15,6 +16,7 @@ export type ExtractParams = {
 	document: lc.DocumentUri
 };
 
+
 export async function activate(ctx: vscode.ExtensionContext) {
 	let config: Config = configRaw as Config;
 	console.log("config: ", config);
@@ -23,9 +25,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
 }
 
 function setServer(ctx: vscode.ExtensionContext): vscode.ExtensionContext {
-	ctx.subscriptions.push(
-		
-	);
+	ctx.subscriptions.push();
 	return ctx;
 }
 
@@ -59,6 +59,14 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 				if (commands === 'extract') {
 					const paramsBack = await extractSelection(args);
 					next('extract-server', [paramsBack]);
+					return;
+				} else if (commands === 'provide attribute') {
+					const paramsBack = await getAttrSelection(args);
+					next('provide attribute exec', [paramsBack]);
+					return;
+				} else if (commands === 'run snippet') {
+					const tabpos:TabPosition[] = args[0];
+					multiCursor(tabpos);
 					return;
 				}
 				next(commands, args);
