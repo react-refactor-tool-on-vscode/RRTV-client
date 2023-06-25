@@ -3,21 +3,20 @@
 import * as vscode from 'vscode';
 import * as path from "path";
 import * as configRaw from './config.json';
-import {Config} from "./config";
-import {extractSelection} from './commandController';
+import { Config } from "./config";
+import { extractSelection } from './commandController';
 import * as lc from 'vscode-languageclient/node';
 
-let client: lc.LanguageClient;
+export let client: lc.LanguageClient;
 
-export type extractParams = {
+export type ExtractParams = {
 	items: string[],
 	range: vscode.Range,
 	document: lc.DocumentUri
 };
 
-
 export async function activate(ctx: vscode.ExtensionContext) {
-	let config:Config = configRaw as Config;
+	let config: Config = configRaw as Config;
 	console.log("config: ", config);
 	setServer(ctx);
 	await createClient(ctx, config);
@@ -25,12 +24,19 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
 function setServer(ctx: vscode.ExtensionContext): vscode.ExtensionContext {
 	ctx.subscriptions.push(
-		//vscode.commands.registerTextEditorCommand
+		
 	);
 	return ctx;
 }
 
-
+const docSelector = [
+	{ scheme: 'file', language: 'javascript' },
+	{ scheme: 'file', language: 'javascriptreact' },
+	{ scheme: 'file', language: 'typescript' },
+	{ scheme: 'file', language: 'typescriptreact' },
+	{ scheme: 'file', language: 'json' },
+	{ scheme: 'file', language: 'plaintext' },
+];
 
 function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.LanguageClient> {
 	const serverModule = ctx.asAbsolutePath(config.serverPath);
@@ -43,24 +49,17 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 		}
 	};
 	const clientOptions: lc.LanguageClientOptions = {
-		documentSelector: [
-			{scheme: 'file', language: 'javascript' },
-			{scheme: 'file', language: 'javascriptreact' },
-			{scheme: 'file', language: 'typescript' },
-			{scheme: 'file', language: 'typescriptreact'},
-			{scheme: 'file', language: 'json'},
-			{scheme: 'file', language: 'plaintext'},
-	],
+		documentSelector: docSelector,
 		synchronize: {
 			configurationSection: 'languageServerExample',
 			fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
 		},
 		middleware: {
 			executeCommand: async (commands, args, next) => {
-				if(commands === 'extract') {
+				if (commands === 'extract') {
 					const paramsBack = await extractSelection(args);
 					next('extract-server', [paramsBack]);
-					console.log(paramsBack);
+					return;
 				}
 				next(commands, args);
 			}
@@ -72,7 +71,7 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 		serverOptions,
 		clientOptions
 	);
-	if(client) {
+	if (client) {
 		console.log("client created");
 		client.start().catch(err => console.error(err));
 	} else {
@@ -82,9 +81,8 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 }
 
 
-// This method is called when your extension is deactivated
 export function deactivate() {
-	if(!client) {
+	if (!client) {
 		return undefined;
 	}
 	return client.stop();
