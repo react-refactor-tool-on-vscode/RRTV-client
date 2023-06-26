@@ -27,3 +27,32 @@ export async function extractSelection(args:any): Promise<ExtractParamsBack> {
     return paramsBack;
 }
 
+export type  ExtractJSXParams ={
+    document: string;
+    range: vscode.Range;
+}
+
+export type  ExtractJSXParamsBack ={
+    name: string;
+    document: string;
+    range: vscode.Range;
+}
+
+export async function extractJSX(args: any): Promise<ExtractJSXParamsBack> {
+    const params = args as ExtractJSXParams[];
+    let name = await vscode.window.showInputBox({
+        title: 'asdfasdf',
+        prompt: 'asdfasdf'
+    });
+    if (!name) {
+        name = 'default';
+    }
+
+    const paramsBack: ExtractJSXParamsBack = {
+        name: name,
+        range: params[0].range,
+        document: params[0].document
+    };
+
+    return paramsBack;
+}
