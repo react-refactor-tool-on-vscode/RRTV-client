@@ -21,6 +21,17 @@ export async function activate(ctx: vscode.ExtensionContext) {
 	console.log("config: ", config);
 	setServer(ctx);
 	await createClient(ctx, config);
+	client.onRequest(lc.ExecuteCommandRequest.method, (params) => {
+		vscode.window.showInformationMessage(params.arguments);
+		const command:string = params.command;
+		if(command === 'run snippet') {
+			vscode.window.showInformationMessage(params.arguments);
+			const position:lc.Position = params.arguments[0];
+			const text:string = params.arguments[1];
+			
+			multiCursor(position, text);
+		}
+	});
 }
 
 function setServer(ctx: vscode.ExtensionContext): vscode.ExtensionContext {
@@ -29,6 +40,8 @@ function setServer(ctx: vscode.ExtensionContext): vscode.ExtensionContext {
 	);
 	return ctx;
 }
+
+
 
 const docSelector = [
 	{ scheme: 'file', language: 'javascript' },
@@ -69,10 +82,6 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 					const paramsBack = await getAttrSelection(args);
 					next('provide attribute exec', [paramsBack]);
 					return;
-				} else if (commands === 'run snippet') {
-					const tabpos:TabPosition[] = args[0];
-					multiCursor(tabpos);
-					return;
 				}
 				next(commands, args);
 			}
@@ -91,6 +100,7 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 		console.log("client not created");
 	}
 	return Promise.resolve(client);
+	
 }
 
 

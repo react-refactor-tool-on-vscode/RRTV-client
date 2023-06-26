@@ -3,18 +3,16 @@ import * as lc from 'vscode-languageclient/node';
 import {client} from './extension';
 
 export type TabPosition = {
-    position: vscode.Position,
+    position: lc.Position,
     tab: number
 };
 
 
-export function multiCursor(tabPositions:TabPosition[]) {
+export function multiCursor(start:lc.Position, text:string) {
     const editor = vscode.window.activeTextEditor;
     if(!editor) {return;}
-
-    for(const item of tabPositions) {
-        const snippet = new vscode.SnippetString;
-        snippet.appendTabstop(item.tab);
-        editor.insertSnippet(snippet, item.position);
-    }
+    let snippet = new vscode.SnippetString(text);
+    const position = new vscode.Position(start.line, start.character);
+    vscode.window.showInformationMessage(snippet.value);
+    editor.insertSnippet(snippet, position);
 }
