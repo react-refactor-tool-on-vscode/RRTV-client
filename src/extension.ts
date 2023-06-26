@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as path from "path";
 import * as configRaw from './config.json';
 import { Config } from "./config";
-import { extractSelection } from './commandController';
+import { extractSelection, stateUpgradeSelection } from './commandController';
 import * as lc from 'vscode-languageclient/node';
 
 export let client: lc.LanguageClient;
@@ -59,6 +59,10 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 				if (commands === 'extract') {
 					const paramsBack = await extractSelection(args);
 					next('extract-server', [paramsBack]);
+					return;
+				} else if(commands === 'stateUpgrade') {
+					const paramsBack = await stateUpgradeSelection(args);
+					next('stateUpgrade-server', [paramsBack]);
 					return;
 				}
 				next(commands, args);
