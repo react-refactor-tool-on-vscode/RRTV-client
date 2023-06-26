@@ -44,7 +44,7 @@ export async function stateUpgradeSelection(args:any): Promise<StateUpgradeParam
 	const params = args as ExtractParams[];
     const items = params[0].items;
     let pick = await vscode.window.showQuickPick(items);
-    let name = 'stateUpgrade'
+    let name = 'stateUpgrade';
     if (pick === undefined) {pick = 'default';}
     const paramsBack = {
         pick: pick,
@@ -62,7 +62,7 @@ export async function getAttrSelection(args:any): Promise<AttrParamsBack> {
     if(!pick) {pick = 'default';}
     return {
         pick: pick,
-        document:document,
+        document: document,
         range: range,
     };
 }
