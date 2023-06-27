@@ -28,7 +28,6 @@ export async function activate(ctx: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage(params.arguments);
 			const position:lc.Position = params.arguments[0];
 			const text:string = params.arguments[1];
-			
 			multiCursor(position, text);
 		}
 	});
@@ -78,9 +77,9 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 					const paramsBack = await stateUpgradeSelection(args);
 					next('stateUpgrade-server', [paramsBack]);
 					return;
-				} else if (commands === 'provide attribute') {
+				} else if (commands === 'provide-attribute.0') {
 					const paramsBack = await getAttrSelection(args);
-					next('provide attribute exec', [paramsBack]);
+					next('provide-attribute.1', paramsBack);
 					return;
 				}
 				next(commands, args);

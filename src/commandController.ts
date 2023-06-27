@@ -54,15 +54,18 @@ export async function stateUpgradeSelection(args:any): Promise<StateUpgradeParam
     return paramsBack;
 }
 
-export async function getAttrSelection(args:any): Promise<AttrParamsBack> {
-    const items:string[] = args[0].items;
-    const document = args[0].document;
-    const range:vscode.Range = args[0].range;
+export async function getAttrSelection(args:any): Promise<any[]> {
+    const items:string[] = args[2];
+    const document = args[0];
+    const range:vscode.Range = args[1];
     let pick = await vscode.window.showQuickPick(items);
-    if(!pick) {pick = 'default';}
-    return {
-        pick: pick,
-        document: document,
-        range: range,
-    };
+    let option = 4;
+    if(!pick) {option = 4;}
+    for(let i = 0; i < 4; i ++) {
+        if(pick === items[i]) {
+            option = i;
+            break;
+        }
+    }
+    return [document, range, option];
 }
