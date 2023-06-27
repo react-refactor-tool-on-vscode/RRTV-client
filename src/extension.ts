@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as path from "path";
 import * as configRaw from './config.json';
 import { Config } from "./config";
-import { extractSelection, getAttrSelection, stateUpgradeSelection } from './commandController';
+import { extractSelection, extractJSX , getAttrSelection, stateUpgradeSelection } from './commandController';
 import * as lc from 'vscode-languageclient/node';
 import { TabPosition, multiCursor } from './multicursor';
 
@@ -81,6 +81,21 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 				} else if (commands === 'provide attribute') {
 					const paramsBack = await getAttrSelection(args);
 					next('provide attribute exec', [paramsBack]);
+					return;
+				}else if (commands==='jsx-extract-return'){
+					const paramsBack = await extractJSX(args);
+					vscode.window.showInformationMessage('commands is jsx-extract-return');
+					next('jsx-extract-return-exec', [paramsBack]);
+					return;
+				}else if (commands==='jsx-extract-reducer'){
+					const paramsBack = await extractJSX(args);
+					vscode.window.showInformationMessage('commands is jsx-extract-reducer');
+					next('jsx-extract-reducer-exec', [paramsBack]);
+					return;
+				}else if (commands==='jsx-extract-hooks'){
+					const paramsBack = await extractJSX(args);
+					vscode.window.showInformationMessage('commands is jsx-extract-hooks');
+					next('jsx-extract-hooks-exec', [paramsBack]);
 					return;
 				}
 				next(commands, args);
