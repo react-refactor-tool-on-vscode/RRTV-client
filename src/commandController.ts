@@ -93,7 +93,7 @@ export async function getAttrSelection(args:any): Promise<any[]> {
     if(!pick) {option = 4;}
     for(let i = 0; i < 4; i ++) {
         if(pick === items[i]) {
-            option = i;
+            option = i + 1;
             break;
         }
     }
