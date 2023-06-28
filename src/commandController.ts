@@ -73,6 +73,8 @@ export async function extractJSX(args: any) {
     const editor = vscode.window.activeTextEditor;
     if(!editor) {return;}
     const change = new vscode.WorkspaceEdit();
+    // change.replace(editor.document.uri, editor.document.validateRange(
+    //     new vscode.Range(new vscode.Position(0, 0), new vscode.Position(Infinity, Infinity))), "");
     change.replace(editor.document.uri, newRange, "");
     await vscode.workspace.applyEdit(change);
     editor.insertSnippet(new vscode.SnippetString(newText), new vscode.Position(0, 0));
