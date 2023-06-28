@@ -14,3 +14,5 @@ export function multiCursor(text:string) {
     let snippet = new vscode.SnippetString(text);
     editor.insertSnippet(snippet);
 }
+
+

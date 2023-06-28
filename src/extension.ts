@@ -75,10 +75,8 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 					const paramsBack = await stateUpgradeSelection(args);
 					next('stateUpgrade-server', [paramsBack]);
 					return;
-				} else if (commands==='jsx-extract-return'){
-					const paramsBack = await extractJSX(args);
-					vscode.window.showInformationMessage('commands is jsx-extract-return');
-					next('jsx-extract-return-exec', [paramsBack]);
+				} else if (commands==='extract-attribute.0'){
+					extractJSX(args);
 					return;
 				} else if (commands==='jsx-extract-reducer'){
 					const paramsBack = await extractJSX(args);

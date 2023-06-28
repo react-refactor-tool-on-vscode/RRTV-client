@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as lc from 'vscode-languageclient/node';
 import { ExtractParams } from './extension';
+import { multiCursor } from './multicursor';
 
 export type ExtractParamsBack = {
     name: string,
@@ -66,22 +67,15 @@ export async function stateUpgradeSelection(args:any): Promise<StateUpgradeParam
 }
 
 
-export async function extractJSX(args: any): Promise<ExtractJSXParamsBack> {
-    const params = args as ExtractJSXParams[];
-    let name = await vscode.window.showInputBox({
-        title: 'asdfasdf',
-        prompt: 'asdfasdf'
-    });
-    if (!name) {
-        name = 'default';
-    }
-
-    const paramsBack: ExtractJSXParamsBack = {
-        name: name,
-        range: params[0].range,
-        document: params[0].document
-    };
-    return paramsBack;
+export async function extractJSX(args: any) {
+    const newText = args[0];
+    const newRange = args[1];
+    const editor = vscode.window.activeTextEditor;
+    if(!editor) {return;}
+    const change = new vscode.WorkspaceEdit();
+    change.replace(editor.document.uri, newRange, "");
+    await vscode.workspace.applyEdit(change);
+    editor.insertSnippet(new vscode.SnippetString(newText), new vscode.Position(0, 0));
 }
 
 export async function getAttrSelection(args:any): Promise<any[]> {
