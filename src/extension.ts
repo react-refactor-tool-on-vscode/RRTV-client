@@ -19,16 +19,14 @@ export type ExtractParams = {
 export async function activate(ctx: vscode.ExtensionContext) {
 	let config: Config = configRaw as Config;
 	console.log("config: ", config);
+	
 	setServer(ctx);
 	await createClient(ctx, config);
-	client.onRequest(lc.ExecuteCommandRequest.method, (params) => {
-		vscode.window.showInformationMessage(params.arguments);
+	client.onRequest(lc.ExecuteCommandRequest.method, async (params) => {
 		const command:string = params.command;
-		if(command === 'run snippet') {
-			vscode.window.showInformationMessage(params.arguments);
-			const position:lc.Position = params.arguments[0];
-			const text:string = params.arguments[1];
-			multiCursor(position, text);
+		if(command === 'provide-attribute.2') {
+			const text:string = params.arguments[2];
+			multiCursor(text);
 		}
 	});
 }
@@ -82,12 +80,12 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 					vscode.window.showInformationMessage('commands is jsx-extract-return');
 					next('jsx-extract-return-exec', [paramsBack]);
 					return;
-				}else if (commands==='jsx-extract-reducer'){
+				} else if (commands==='jsx-extract-reducer'){
 					const paramsBack = await extractJSX(args);
 					vscode.window.showInformationMessage('commands is jsx-extract-reducer');
 					next('jsx-extract-reducer-exec', [paramsBack]);
 					return;
-				}else if (commands==='jsx-extract-hooks'){
+				} else if (commands==='jsx-extract-hooks'){
 					const paramsBack = await extractJSX(args);
 					vscode.window.showInformationMessage('commands is jsx-extract-hooks');
 					next('jsx-extract-hooks-exec', [paramsBack]);

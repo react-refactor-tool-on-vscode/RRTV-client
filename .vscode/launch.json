@@ -28,7 +28,7 @@
 			"port": 6009,
 			"restart": true,
 			"outFiles": [
-				"${workspaceRoot}/../server/out/*.js"
+				"${workspaceRoot}/../e2etest/RRTV-server/out/server.js"
 			]
 		},
 		{

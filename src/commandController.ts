@@ -81,9 +81,9 @@ export async function extractJSX(args: any): Promise<ExtractJSXParamsBack> {
         range: params[0].range,
         document: params[0].document
     };
-
     return paramsBack;
 }
+
 export async function getAttrSelection(args:any): Promise<any[]> {
     const items:string[] = args[2];
     const document = args[0];

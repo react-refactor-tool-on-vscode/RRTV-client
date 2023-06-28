@@ -8,11 +8,9 @@ export type TabPosition = {
 };
 
 
-export function multiCursor(start:lc.Position, text:string) {
+export function multiCursor(text:string) {
     const editor = vscode.window.activeTextEditor;
     if(!editor) {return;}
     let snippet = new vscode.SnippetString(text);
-    const position = new vscode.Position(start.line, start.character);
-    vscode.window.showInformationMessage(snippet.value);
-    editor.insertSnippet(snippet, position);
+    editor.insertSnippet(snippet);
 }
