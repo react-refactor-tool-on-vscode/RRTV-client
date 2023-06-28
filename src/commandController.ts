@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as lc from 'vscode-languageclient/node';
 import { ExtractParams } from './extension';
 import { multiCursor } from './multicursor';
+import { connect } from 'http2';
 
 export type ExtractParamsBack = {
     name: string,
@@ -72,12 +73,8 @@ export async function extractJSX(args: any) {
     const newRange = args[1];
     const editor = vscode.window.activeTextEditor;
     if(!editor) {return;}
-    const change = new vscode.WorkspaceEdit();
-    // change.replace(editor.document.uri, editor.document.validateRange(
-    //     new vscode.Range(new vscode.Position(0, 0), new vscode.Position(Infinity, Infinity))), "");
-    change.replace(editor.document.uri, newRange, "");
-    await vscode.workspace.applyEdit(change);
-    editor.insertSnippet(new vscode.SnippetString(newText), new vscode.Position(0, 0));
+    vscode.window.showInformationMessage(JSON.stringify(newRange));
+    editor.insertSnippet(new vscode.SnippetString(newText), new vscode.Range(newRange.start, newRange.end));
 }
 
 export async function getAttrSelection(args:any): Promise<any[]> {
