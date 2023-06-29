@@ -4,5 +4,7 @@ node_modules
 .vscode-test/
 *.vsix
 .eslintrc.json
+config.json
 
 
+src/config.json

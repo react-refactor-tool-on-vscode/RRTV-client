@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import * as lc from 'vscode-languageclient/node';
-import { ExtractParams } from './extension';
 import { multiCursor } from './multicursor';
 import { connect } from 'http2';
+import * as t from "@babel/types";
 
 export type ExtractParamsBack = {
     name: string,
@@ -10,11 +10,6 @@ export type ExtractParamsBack = {
     document: lc.DocumentUri
 };
 
-export type StateUpgradeParamsBack = {
-    pick : string,
-    range: vscode.Range,
-    document: lc.DocumentUri
-};
 
 export type AttrParamsBack = {
     pick: number | string;
@@ -35,7 +30,7 @@ export type  ExtractJSXParamsBack ={
 
 
 export async function extractSelection(args:any): Promise<ExtractParamsBack> {
-	const params = args as ExtractParams[];
+	const params = args;
     const items = params[0].items;
     let pick = await vscode.window.showQuickPick(items);
     let name = await vscode.window.showInputBox({
@@ -53,18 +48,31 @@ export async function extractSelection(args:any): Promise<ExtractParamsBack> {
     return paramsBack;
 }
 
-export async function stateUpgradeSelection(args:any): Promise<StateUpgradeParamsBack> {
-	const params = args as ExtractParams[];
-    const items = params[0].items;
-    let pick = await vscode.window.showQuickPick(items);
-    let name = 'stateUpgrade';
-    if (pick === undefined) {pick = 'default';}
-    const paramsBack = {
-        pick: pick,
-        range: params[0].range,
-        document: params[0].document
-    };
-    return paramsBack;
+function loc2Range(loc:any): vscode.Range {
+    return new vscode.Range(
+        new vscode.Position(loc.start.line - 1, loc.start.colomn),
+        new vscode.Position(loc.end.line - 1, loc.end.colomn)
+    );
+}
+
+export async function stateUpgradeSelection(args:any): Promise<any[]> {
+    const [uri, range, locMap, isSingle] = args;
+    const editor = vscode.window.activeTextEditor;
+    if(!editor) {return [];}
+    let type:string = '0';
+    let name = 'default name';
+    const pick = await vscode.window.showQuickPick(
+        ["To an existed component", "To a new component"], 
+        {title:"choose one parent component or create a new component"}
+    ) ?? 'To a new component';
+    if(pick === 'To a new component') {
+        type = '1';
+        name = await vscode.window.showInputBox({prompt: "input a new name here"}) ?? 'default';
+    } else {
+        name = pick;
+    }
+    return [uri, range, locMap, isSingle, type, name];
+
 }
 
 
