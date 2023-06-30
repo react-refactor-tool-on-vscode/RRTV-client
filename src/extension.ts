@@ -10,7 +10,6 @@ import { TabPosition, multiCursor } from './multicursor';
 
 export let client: lc.LanguageClient;
 
-
 export async function activate(ctx: vscode.ExtensionContext) {
 	let config: Config = configRaw as Config;
 	console.log("config: ", config);
@@ -75,12 +74,10 @@ function createClient(ctx: vscode.ExtensionContext, config: Config): Promise<lc.
 					return;
 				} else if (commands==='jsx-extract-reducer'){
 					const paramsBack = await extractJSX(args);
-					vscode.window.showInformationMessage('commands is jsx-extract-reducer');
 					next('jsx-extract-reducer-exec', [paramsBack]);
 					return;
 				} else if (commands==='jsx-extract-hooks'){
 					const paramsBack = await extractJSX(args);
-					vscode.window.showInformationMessage('commands is jsx-extract-hooks');
 					next('jsx-extract-hooks-exec', [paramsBack]);
 				} else if (commands === 'provide-attribute.0') {
 					const paramsBack = await getAttrSelection(args);

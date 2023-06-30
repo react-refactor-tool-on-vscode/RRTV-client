@@ -62,7 +62,7 @@ export async function stateUpgradeSelection(args:any): Promise<any[]> {
     let type:string = '0';
     let name = 'default name';
     const pick = await vscode.window.showQuickPick(
-        ["To an existed component", "To a new component"], 
+        ["To existing components", "To a new component"], 
         {title:"choose one parent component or create a new component"}
     ) ?? 'To a new component';
     if(pick === 'To a new component') {
@@ -81,7 +81,6 @@ export async function extractJSX(args: any) {
     const newRange = args[1];
     const editor = vscode.window.activeTextEditor;
     if(!editor) {return;}
-    vscode.window.showInformationMessage(JSON.stringify(newRange));
     editor.insertSnippet(new vscode.SnippetString(newText), new vscode.Range(newRange.start, newRange.end));
 }
 
