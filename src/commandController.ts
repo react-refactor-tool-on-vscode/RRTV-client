@@ -91,7 +91,7 @@ export async function getAttrSelection(args:any): Promise<any[]> {
     const range:vscode.Range = args[1];
     let pick = await vscode.window.showQuickPick(items);
     let option = 4;
-    if(!pick) {option = 4;}
+    if(!pick) {option = 5;}
     for(let i = 0; i < 4; i ++) {
         if(pick === items[i]) {
             option = i + 1;
