@@ -64,13 +64,14 @@ export async function stateUpgradeSelection(args:any): Promise<any[]> {
     const pick = await vscode.window.showQuickPick(
         ["To existing components", "To a new component"], 
         {title:"choose one parent component or create a new component"}
-    ) ?? 'To a new component';
+    ) ?? 'default';
     if(pick === 'To a new component') {
         type = '1';
         name = await vscode.window.showInputBox({prompt: "input a new name here"}) ?? 'default';
     } else {
         name = pick;
-    }
+    } 
+    if(pick == 'default') {type = '2';}
     return [uri, range, locMap, isSingle, type, name];
 
 }
